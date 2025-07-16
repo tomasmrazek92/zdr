@@ -1,45 +1,126 @@
-import { createSwiper } from '$utils/globalFunctions';
-
-// ----- SWIPERS
-if ($('.company_content').length) {
-  createSwiper('.company_content', '.company_slider', 'company-swiper', {
-    slidesPerView: 2,
-    spaceBetween: 16,
-  });
-}
-
-if ($('.career_component').length) {
-  createSwiper('.career_component', '.career_slider', 'career-swiper', {
-    slidesPerView: 1.25,
-    spaceBetween: 16,
-    breakpoints: {
-      // when window width is >= 480px
-      479: {
-        slidesPerView: 2,
-        spaceBetween: 24,
+// Sample data for swiperInstances, specific to this page
+export const swiperInstances = [
+  // Global
+  [
+    '.section.cc-stats',
+    '.stats-grid',
+    'stats',
+    {
+      autoHeight: 'true',
+      breakpoints: {
+        768: {
+          slidesPerView: 2,
+        },
+        992: {
+          slidesPerView: 4,
+        },
       },
     },
-  });
-}
-
-if ($('.stories_component').length) {
-  const slideLength = $('.stories_slider .swiper-slide').length;
-  if (slideLength === 0) {
-    $('.stories_component').closest('.section').hide();
-  } else if (slideLength === 1) {
-    $('.stories_slider .swiper-slide').css('max-width', '54rem');
-    $('.stories_component .arrows-group').hide();
-  } else {
-    createSwiper('.stories_component', '.stories_slider-cms', 'stories-swiper', {
-      slidesPerView: 'auto',
-      spaceBetween: 16,
-    });
-  }
-}
-
-if ($('.platform-prev_component').length) {
-  createSwiper('.platform-prev_component', '.platform-prev_slider', 'platprevs-swiper', {
-    slidesPerView: 'auto',
-    spaceBetween: 0,
-  });
-}
+    'desktop',
+  ],
+  [
+    '[data-carousel-logo]',
+    '.logos-carousel_grid',
+    'logos',
+    {
+      slidesPerView: 2,
+      grid: {
+        rows: 2,
+      },
+    },
+    'all',
+  ],
+  [
+    '[data-carousel-news]',
+    '.news_grid-wrap',
+    'news',
+    {
+      observer: true,
+      breakpoints: {
+        0: {
+          slidesPerView: 1.1,
+          spaceBetween: 8,
+          grid: {
+            rows: 1,
+          },
+        },
+        768: {
+          spaceBetween: 32,
+          slidesPerView: 1,
+          grid: {
+            rows: 2,
+          },
+        },
+        992: {
+          spaceBetween: 32,
+          slidesPerView: 2,
+          grid: {
+            rows: 2,
+          },
+        },
+      },
+    },
+    'all',
+  ],
+  [
+    '[data-carousel-team]',
+    '.team_grid-wrap',
+    'team',
+    {
+      slidesPerView: 1.2,
+      spaceBetween: 8,
+    },
+    'mobile',
+  ],
+  [
+    '.step-row',
+    '.step-row_slider',
+    'steps',
+    {
+      spaceBetween: 0,
+      breakpoints: {
+        0: {
+          slidesPerView: 'auto',
+        },
+        992: {
+          slidesPerView: 3,
+        },
+      },
+    },
+    'all',
+  ],
+  [
+    '[data-carousel-pillar]',
+    '.pillar-slider',
+    'pillar',
+    {
+      spaceBetween: 0,
+      breakpoints: {
+        0: {
+          slidesPerView: 'auto',
+        },
+        992: {
+          slidesPerView: 2,
+        },
+      },
+    },
+    'all',
+  ],
+  [
+    '[data-carousel-project]',
+    '.project-logos',
+    'pillar',
+    {
+      spaceBetween: 0,
+      breakpoints: {
+        0: {
+          slidesPerView: 'auto',
+        },
+        992: {
+          slidesPerView: 4,
+        },
+      },
+    },
+    'all',
+  ],
+];
