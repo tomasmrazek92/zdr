@@ -32,7 +32,7 @@ export const swiperInstances = [
   ],
   [
     '[data-carousel-news]',
-    '.news_grid-wrap',
+    '.news_slider-wrap',
     'news',
     {
       observer: true,
