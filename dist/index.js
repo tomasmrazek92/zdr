@@ -1,1 +1,617 @@
-"use strict";(()=>{var x=[[".section.cc-stats",".stats-grid","stats",{autoHeight:"true",breakpoints:{768:{slidesPerView:2},992:{slidesPerView:4}}},"desktop"],["[data-carousel-logo]",".logos-carousel_grid","logos",{slidesPerView:2,grid:{rows:2}},"all"],["[data-carousel-news]",".news_slider-wrap","news",{observer:!0,breakpoints:{0:{slidesPerView:1.1,spaceBetween:8,grid:{rows:1}},768:{spaceBetween:32,slidesPerView:1,grid:{rows:2}},992:{spaceBetween:32,slidesPerView:2,grid:{rows:2}}}},"all"],["[data-carousel-team]",".team_grid-wrap","team",{slidesPerView:1.2,spaceBetween:8},"mobile"],[".step-row",".step-row_slider","steps",{spaceBetween:0,breakpoints:{0:{slidesPerView:"auto"},992:{slidesPerView:3}}},"all"],["[data-carousel-pillar]",".pillar-slider","pillar",{spaceBetween:0,breakpoints:{0:{slidesPerView:"auto"},992:{slidesPerView:2}}},"all"],["[data-carousel-project]",".project-logos","pillar",{spaceBetween:0,breakpoints:{0:{slidesPerView:"auto"},992:{slidesPerView:4}}},"all"]];var v=window.innerWidth,m={};var P=(n,o,e,i,t)=>{let a=$(n);a.length!==0&&(m[e]=0,m[e]=m[e]||0,a.each(function(){let s=`${e}_${m[e]}`;E(this,o,s,[".swiper-arrow",".swiper-pag",".swiper-drag-wrapper",".swiper-navigation"]);let r=I(i,s);V(this,o,s,e,r,t),m[e]++}))},E=(n,o,e,i)=>{i.forEach(t=>{$(n).find(t).addClass(e)}),$(n).find(o).addClass(e)},I=(n,o)=>{let e={el:`.swiper-navigation.${o}`,dynamicBullets:!0,type:"bullets",clickable:!0},i=n.pagination?{...e,...n.pagination}:e,t=n.on||{},a={...t,init:function(...s){t.init&&t.init.apply(this,s),setTimeout(()=>{typeof ScrollTrigger!="undefined"&&ScrollTrigger.refresh()},100)},resize:function(...s){t.resize&&t.resize.apply(this,s),typeof ScrollTrigger!="undefined"&&ScrollTrigger.refresh()}};return{speed:1e3,navigation:{prevEl:`.swiper-arrow.prev.${o}`,nextEl:`.swiper-arrow.next.${o}`},mousewheel:{enabled:!0,forceToAxis:!0,thresholdDelta:25},pagination:i,...n,on:a}},V=(n,o,e,i,t,a)=>{swipers[i]=swipers[i]||{},swipers[i][e]=swipers[i][e]||{};let r=swipers[i][e].swiperInstance,c=a==="desktop"&&window.matchMedia("(min-width: 768px)").matches,d=a==="mobile"&&window.matchMedia("(min-width: 0px) and (max-width: 767px)").matches,p=a==="all",u=()=>{r&&(r.destroy(!0,!0),delete swipers[i][e],console.log("Swiper destroyed for",o,"with uniqueKey",e))};!c&&a==="desktop"||!d&&a==="mobile"||!p&&a==="all"?u():(c||d||p)&&!r&&(()=>{let g=$(`${o}.${e}`)[0];if(!g)return;let w=new IntersectionObserver(f=>{f.forEach(h=>{if((c||d||p)&&!r){let b=new Swiper(`${o}.${e}`,t);swipers[i][e]={swiperInstance:b,mode:c?"desktop":d?"mobile":"all",initialized:!0},w.disconnect(),console.log("Swiper initialized for",o,"with uniqueKey",e)}})},{});swipers[i][e].observer=w,w.observe(g)})()},S=n=>{n.forEach(o=>{P(...o)})},y=(n,o)=>{S(n),window.addEventListener("resize",function(){window.innerWidth!==v&&(v=window.innerWidth,S(n))})};gsap.registerPlugin(DrawSVGPlugin,ScrollTrigger);function k(){function n(i,t,a="scrolled"){let s=$(i),r=$(t),c=s.outerHeight(),d=!1;function p(u){let l=$(window).scrollTop();l>c&&!d?(d=!0,r.addClass(a)):l<=c&&d&&(d=!1,r.removeClass(a))}$(window).on("scroll",function(){p()}),$(window).on("resize",function(){c=s.outerHeight()}),p()}function o(){n(".nav_wrapper",".nav","scrolled")}function e(){n(".title-box",".nav_submenu","opened")}o(),e()}function C(){let n="";$(".nav_submenu").each(function(){let e=$(this),i=$(".title-box_links"),t=e.find(".submenu_list");i.length&&t.length&&i.children().each(function(){let a=$(this).clone();t.append(a)})});function o(){let e="",i=$(window).scrollTop();if($(".submenu_list a").each(function(){let t=$(this).attr("href");if(t&&t.startsWith("#")){let a=t.substring(1),s=$("#"+a+".section-anchor");if(s.length){let c=parseFloat(s.css("margin-bottom")),p=s.offset().top;i>=p&&(e=t)}}}),e!==n){if($(".submenu_list a").removeClass("active"),e){let t=$('.submenu_list a[href="'+e+'"]');if(t.addClass("active"),t.length){let a=$(".nav_submenu"),s=t.position().left,r=a.scrollLeft(),c=parseFloat(getComputedStyle(document.documentElement).fontSize),d=r+s-c;a.animate({scrollLeft:d},300)}}n=e}}$(window).on("scroll",o),o()}function M(){document.querySelectorAll("[data-accordion-css-init]").forEach(n=>{let o=n.getAttribute("data-accordion-close-siblings")==="true";n.addEventListener("click",e=>{let i=e.target.closest("[data-accordion-toggle]");if(!i)return;let t=i.closest("[data-accordion-status]");if(!t)return;let a=t.getAttribute("data-accordion-status")==="active";t.setAttribute("data-accordion-status",a?"not-active":"active"),o&&!a&&n.querySelectorAll('[data-accordion-status="active"]').forEach(s=>{s!==t&&s.setAttribute("data-accordion-status","not-active")})})})}function L(){let n={lines:{duration:.8,stagger:.1},words:{duration:.6,stagger:.05},chars:{duration:.4,stagger:.02}},o=(i,t,a)=>(t==null?void 0:t.dataset[a])||i.dataset[a],e=i=>{let t={lines:["lines"],words:["lines","words"],chars:["lines","words","chars"]};return t[i]||t.lines};document.querySelectorAll('[data-split="heading"]').forEach(i=>{gsap.set(i,{autoAlpha:1});let t=i.closest("[data-split-trigger]"),a=i.dataset.splitReveal||"lines",s=o(i,t,"splitTrigger"),r=s?document.querySelector(s):t||i,c=o(i,t,"splitInstant")==="true",d=o(i,t,"splitStart")||"top 70%",p=o(i,t,"splitToggleActions")||"play none none none",u=(t==null?void 0:t.querySelectorAll('[data-split="item"]'))||[];console.log(u),u.length>0&&gsap.set(u,{visibility:"visible",opacity:0}),SplitText.create(i,{type:e(a).join(", "),mask:"lines",autoSplit:!0,linesClass:"line",wordsClass:"word",charsClass:"letter",onSplit:function(l){let g=l[a],w=n[a],f=gsap.timeline();if(f.from(g,{yPercent:110,duration:w.duration,stagger:w.stagger,ease:"expo.out"}),u.length>0&&f.to(u,{opacity:1,duration:.8,stagger:.1,ease:"expo.out"},"-=0.5"),c)f.play();else{let h={trigger:r,start:d,animation:f,...p==="play none none none"?{once:!0}:{toggleActions:p}};ScrollTrigger.create(h)}}})})}function B(){ScrollTrigger.refresh(),$("[data-counter]").each(function(){let n=$(this),o=this,e=n.text().trim(),i=parseFloat(n.attr("data-duration"))||2,t=n.attr("data-suffix")||"",a=n.attr("data-prefix")||"",s,r=0,c=!1,d=!1;if(e.includes(",")&&e.match(/,\d+$/)){c=!0;let l=e.split(",");s=parseFloat(l[0].replace(/\s/g,"")+"."+l[1]),r=l[1].length}else e.includes(" ")?(d=!0,s=parseFloat(e.replace(/\s/g,""))):s=parseFloat(e);let p=0;r>0&&(p=parseFloat("0."+"0".repeat(r)));let u={value:p};gsap.to(u,{value:s,duration:i,ease:"power2.out",scrollTrigger:{trigger:o,start:"top bottom",once:!0},onUpdate:function(){let l;if(c)if(l=u.value.toFixed(r).replace(".",","),l.includes(",")){let g=l.split(",");g[0]=g[0].replace(/\B(?=(\d{3})+(?!\d))/g," "),l=g.join(",")}else l=l.replace(/\B(?=(\d{3})+(?!\d))/g," ");else d?l=Math.round(u.value).toString().replace(/\B(?=(\d{3})+(?!\d))/g," "):l=u.value.toFixed(r);n.text(a+l+t)}})})}function _(){let n=new Set;$(".animated-path").css("fill","rgb(179, 228, 230)").attr("style","fill-opacity: 0;");function o(){let i=$(".animated-path"),t=i.filter(function(p){return!n.has(p)});if(t.length===0)return;let a=Math.floor(Math.random()*t.length),s=i.index(t[a]),r=t.eq(a),c=Math.random()*2+2,d=Math.random()*1;n.add(s),gsap.to(r[0],{duration:c,delay:d,fillOpacity:1,ease:"power2.inOut",yoyo:!0,repeat:1,onComplete:function(){n.delete(s)}})}function e(){o();let i=Math.random()*300+100;setTimeout(e,i)}e()}function F(){gsap.matchMedia().add({isMobile:"(max-width:479px)",isMobileLandscape:"(max-width:767px)",isTablet:"(max-width:991px)",isDesktop:"(min-width:992px)"},o=>{let{isMobile:e,isMobileLandscape:i,isTablet:t}=o.conditions,a=gsap.context(()=>{document.querySelectorAll('[data-parallax="trigger"]').forEach(s=>{let r=s.getAttribute("data-parallax-disable");if(r==="mobile"&&e||r==="mobileLandscape"&&i||r==="tablet"&&t)return;let c=s.querySelector('[data-parallax="target"]')||s,p=(s.getAttribute("data-parallax-direction")||"vertical")==="horizontal"?"xPercent":"yPercent",u=s.getAttribute("data-parallax-scrub"),l=u?parseFloat(u):2,g=s.getAttribute("data-parallax-start"),w=g!==null?parseFloat(g):-15,f=s.getAttribute("data-parallax-end"),h=f!==null?parseFloat(f):-5,A=`clamp(${s.getAttribute("data-parallax-scroll-start")||"top bottom"})`,T=`clamp(${s.getAttribute("data-parallax-scroll-end")||"bottom top"})`;gsap.fromTo(c,{[p]:w},{[p]:h,ease:"none",scrollTrigger:{trigger:s,start:A,end:T,scrub:l}})})});return()=>a.revert()})}$(document).ready(function(){y(x),k(),C(),M(),L(),B(),_(),F()});window.addEventListener("load",()=>{ScrollTrigger.refresh()});})();
+"use strict";
+(() => {
+  // bin/live-reload.js
+  new EventSource(`${"http://localhost:3000"}/esbuild`).addEventListener("change", () => location.reload());
+
+  // src/swipers.js
+  var swiperInstances = [
+    // Global
+    [
+      ".section.cc-stats",
+      ".stats-grid",
+      "stats",
+      {
+        autoHeight: "true",
+        breakpoints: {
+          768: {
+            slidesPerView: 2
+          },
+          992: {
+            slidesPerView: 4
+          }
+        }
+      },
+      "desktop"
+    ],
+    [
+      "[data-carousel-logo]",
+      ".logos-carousel_grid",
+      "logos",
+      {
+        slidesPerView: 2,
+        grid: {
+          rows: 2
+        }
+      },
+      "all"
+    ],
+    [
+      "[data-carousel-news]",
+      ".news_slider-wrap",
+      "news",
+      {
+        observer: true,
+        breakpoints: {
+          0: {
+            slidesPerView: 1.1,
+            spaceBetween: 8,
+            grid: {
+              rows: 1
+            }
+          },
+          768: {
+            spaceBetween: 32,
+            slidesPerView: 1,
+            grid: {
+              rows: 2
+            }
+          },
+          992: {
+            spaceBetween: 32,
+            slidesPerView: 2,
+            grid: {
+              rows: 2
+            }
+          }
+        }
+      },
+      "all"
+    ],
+    [
+      "[data-carousel-team]",
+      ".team_grid-wrap",
+      "team",
+      {
+        slidesPerView: 1.2,
+        spaceBetween: 8
+      },
+      "mobile"
+    ],
+    [
+      ".step-row",
+      ".step-row_slider",
+      "steps",
+      {
+        spaceBetween: 0,
+        breakpoints: {
+          0: {
+            slidesPerView: "auto"
+          },
+          992: {
+            slidesPerView: 3
+          }
+        }
+      },
+      "all"
+    ],
+    [
+      "[data-carousel-pillar]",
+      ".pillar-slider",
+      "pillar",
+      {
+        spaceBetween: 0,
+        breakpoints: {
+          0: {
+            slidesPerView: "auto"
+          },
+          992: {
+            slidesPerView: 2
+          }
+        }
+      },
+      "all"
+    ],
+    [
+      "[data-carousel-project]",
+      ".project-logos",
+      "pillar",
+      {
+        spaceBetween: 0,
+        breakpoints: {
+          0: {
+            slidesPerView: "auto"
+          },
+          992: {
+            slidesPerView: 4
+          }
+        }
+      },
+      "all"
+    ]
+  ];
+
+  // src/utils/globalSwipers.js
+  var windowWidth = window.innerWidth;
+  var uniqueIdCounters = {};
+  var createResponsiveSwiper = (componentSelector, swiperSelector, classSelector, options, mode) => {
+    let elements = $(componentSelector);
+    if (elements.length === 0)
+      return;
+    uniqueIdCounters[classSelector] = 0;
+    uniqueIdCounters[classSelector] = uniqueIdCounters[classSelector] || 0;
+    elements.each(function() {
+      let uniqueKey = `${classSelector}_${uniqueIdCounters[classSelector]}`;
+      addUniqueClassesToElements(this, swiperSelector, uniqueKey, [
+        ".swiper-arrow",
+        ".swiper-pag",
+        ".swiper-drag-wrapper",
+        ".swiper-navigation"
+      ]);
+      let swiperOptions = getMergedSwiperOptions(options, uniqueKey);
+      manageSwiperInstance(this, swiperSelector, uniqueKey, classSelector, swiperOptions, mode);
+      uniqueIdCounters[classSelector]++;
+    });
+  };
+  var addUniqueClassesToElements = (context, swiperSelector, uniqueKey, controlSelectors) => {
+    controlSelectors.forEach((selector) => {
+      $(context).find(selector).addClass(uniqueKey);
+    });
+    $(context).find(swiperSelector).addClass(uniqueKey);
+  };
+  var getMergedSwiperOptions = (options, uniqueKey) => {
+    const defaultPagination = {
+      el: `.swiper-navigation.${uniqueKey}`,
+      dynamicBullets: true,
+      type: "bullets",
+      clickable: true
+    };
+    const paginationConfig = options.pagination ? { ...defaultPagination, ...options.pagination } : defaultPagination;
+    const existingEvents = options.on || {};
+    const enhancedEvents = {
+      ...existingEvents,
+      init: function(...args) {
+        if (existingEvents.init) {
+          existingEvents.init.apply(this, args);
+        }
+        setTimeout(() => {
+          if (typeof ScrollTrigger !== "undefined") {
+            ScrollTrigger.refresh();
+          }
+        }, 100);
+      },
+      resize: function(...args) {
+        if (existingEvents.resize) {
+          existingEvents.resize.apply(this, args);
+        }
+        if (typeof ScrollTrigger !== "undefined") {
+          ScrollTrigger.refresh();
+        }
+      }
+    };
+    return {
+      speed: 1e3,
+      navigation: {
+        prevEl: `.swiper-arrow.prev.${uniqueKey}`,
+        nextEl: `.swiper-arrow.next.${uniqueKey}`
+      },
+      mousewheel: {
+        enabled: true,
+        forceToAxis: true,
+        thresholdDelta: 25
+      },
+      pagination: paginationConfig,
+      ...options,
+      on: enhancedEvents
+      // Override the 'on' property after spreading options
+    };
+  };
+  var manageSwiperInstance = (context, swiperSelector, uniqueKey, classSelector, swiperOptions, mode) => {
+    swipers[classSelector] = swipers[classSelector] || {};
+    swipers[classSelector][uniqueKey] = swipers[classSelector][uniqueKey] || {};
+    let existingInstance = swipers[classSelector][uniqueKey];
+    let existingSwiper = existingInstance.swiperInstance;
+    let shouldInitDesktop = mode === "desktop" && window.matchMedia("(min-width: 768px)").matches;
+    let shouldInitMobile = mode === "mobile" && window.matchMedia("(min-width: 0px) and (max-width: 767px)").matches;
+    let shouldInitAll = mode === "all";
+    const destroySwiper = () => {
+      if (existingSwiper) {
+        existingSwiper.destroy(true, true);
+        delete swipers[classSelector][uniqueKey];
+        console.log("Swiper destroyed for", swiperSelector, "with uniqueKey", uniqueKey);
+      }
+    };
+    const reInitObserver = () => {
+      const swiperElement = $(`${swiperSelector}.${uniqueKey}`)[0];
+      if (!swiperElement)
+        return;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (shouldInitDesktop || shouldInitMobile || shouldInitAll) {
+            if (!existingSwiper) {
+              let swiper = new Swiper(`${swiperSelector}.${uniqueKey}`, swiperOptions);
+              swipers[classSelector][uniqueKey] = {
+                swiperInstance: swiper,
+                mode: shouldInitDesktop ? "desktop" : shouldInitMobile ? "mobile" : "all",
+                initialized: true
+              };
+              observer.disconnect();
+              console.log("Swiper initialized for", swiperSelector, "with uniqueKey", uniqueKey);
+            }
+          }
+        });
+      }, {});
+      swipers[classSelector][uniqueKey].observer = observer;
+      observer.observe(swiperElement);
+    };
+    if (!shouldInitDesktop && mode === "desktop")
+      destroySwiper();
+    else if (!shouldInitMobile && mode === "mobile")
+      destroySwiper();
+    else if (!shouldInitAll && mode === "all")
+      destroySwiper();
+    else if ((shouldInitDesktop || shouldInitMobile || shouldInitAll) && !existingSwiper) {
+      reInitObserver();
+    }
+  };
+  var runSwipers = (swiperInstances2) => {
+    swiperInstances2.forEach((instance) => {
+      createResponsiveSwiper(...instance);
+    });
+  };
+  var initSwipers = (swiperInstances2, swipersState) => {
+    runSwipers(swiperInstances2);
+    window.addEventListener("resize", function() {
+      if (window.innerWidth !== windowWidth) {
+        windowWidth = window.innerWidth;
+        runSwipers(swiperInstances2);
+      }
+    });
+  };
+
+  // src/index.js
+  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger);
+  function initNavScroll() {
+    function createScrollHandler(triggerSelector, targetSelector, className = "scrolled") {
+      let $trigger = $(triggerSelector);
+      let $target = $(targetSelector);
+      let triggerHeight = $trigger.outerHeight();
+      let hasScrolled = false;
+      function initCheck(el) {
+        let scrollTop = $(window).scrollTop();
+        if (scrollTop > triggerHeight && !hasScrolled) {
+          hasScrolled = true;
+          $target.addClass(className);
+        } else if (scrollTop <= triggerHeight && hasScrolled) {
+          hasScrolled = false;
+          $target.removeClass(className);
+        }
+      }
+      $(window).on("scroll", function() {
+        initCheck();
+      });
+      $(window).on("resize", function() {
+        triggerHeight = $trigger.outerHeight();
+      });
+      initCheck();
+    }
+    function initNavScroll2() {
+      createScrollHandler(".nav_wrapper", ".nav", "scrolled");
+    }
+    function initSubmenuScroll() {
+      createScrollHandler(".title-box", ".nav_submenu", "opened");
+    }
+    initNavScroll2();
+    initSubmenuScroll();
+  }
+  function initSubMenu() {
+    let lastActiveSection = "";
+    $(".nav_submenu").each(function() {
+      const $submenu = $(this);
+      const $titleBoxLinks = $(".title-box_links");
+      const $submenuList = $submenu.find(".submenu_list");
+      if ($titleBoxLinks.length && $submenuList.length) {
+        $titleBoxLinks.children().each(function() {
+          const $clonedItem = $(this).clone();
+          $submenuList.append($clonedItem);
+        });
+      }
+    });
+    function updateActiveLink() {
+      let currentSection = "";
+      const scrollTop = $(window).scrollTop();
+      $(".submenu_list a").each(function() {
+        const href = $(this).attr("href");
+        if (href && href.startsWith("#")) {
+          const targetId = href.substring(1);
+          const $targetElement = $("#" + targetId + ".section-anchor");
+          if ($targetElement.length) {
+            const marginBottom = parseFloat($targetElement.css("margin-bottom"));
+            const triggerOffset = marginBottom;
+            const elementTop = $targetElement.offset().top;
+            const triggerPoint = elementTop;
+            if (scrollTop >= triggerPoint) {
+              currentSection = href;
+            }
+          }
+        }
+      });
+      if (currentSection !== lastActiveSection) {
+        $(".submenu_list a").removeClass("active");
+        if (currentSection) {
+          const $activeLink = $('.submenu_list a[href="' + currentSection + '"]');
+          $activeLink.addClass("active");
+          if ($activeLink.length) {
+            const $navSubmenu = $(".nav_submenu");
+            const activeLinkOffset = $activeLink.position().left;
+            const currentScrollLeft = $navSubmenu.scrollLeft();
+            const remInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const targetScrollLeft = currentScrollLeft + activeLinkOffset - remInPixels;
+            $navSubmenu.animate(
+              {
+                scrollLeft: targetScrollLeft
+              },
+              300
+            );
+          }
+        }
+        lastActiveSection = currentSection;
+      }
+    }
+    $(window).on("scroll", updateActiveLink);
+    updateActiveLink();
+  }
+  function initAccordionCSS() {
+    document.querySelectorAll("[data-accordion-css-init]").forEach((accordion) => {
+      const closeSiblings = accordion.getAttribute("data-accordion-close-siblings") === "true";
+      accordion.addEventListener("click", (event) => {
+        const toggle = event.target.closest("[data-accordion-toggle]");
+        if (!toggle)
+          return;
+        const singleAccordion = toggle.closest("[data-accordion-status]");
+        if (!singleAccordion)
+          return;
+        const isActive = singleAccordion.getAttribute("data-accordion-status") === "active";
+        singleAccordion.setAttribute("data-accordion-status", isActive ? "not-active" : "active");
+        if (closeSiblings && !isActive) {
+          accordion.querySelectorAll('[data-accordion-status="active"]').forEach((sibling) => {
+            if (sibling !== singleAccordion)
+              sibling.setAttribute("data-accordion-status", "not-active");
+          });
+        }
+      });
+    });
+  }
+  function initMaskTextScrollReveal() {
+    const splitConfig = {
+      lines: { duration: 0.8, stagger: 0.1 },
+      words: { duration: 0.7, stagger: 0.1 },
+      chars: { duration: 0.4, stagger: 0.02 }
+    };
+    const getDataValue = (element, parent, key) => parent?.dataset[key] || element.dataset[key];
+    const createTypesToSplit = (type) => {
+      const typeMap = {
+        lines: ["lines"],
+        words: ["lines", "words"],
+        chars: ["lines", "words", "chars"]
+      };
+      return typeMap[type] || typeMap.lines;
+    };
+    document.querySelectorAll('[data-split="heading"]').forEach((heading) => {
+      gsap.set(heading, { autoAlpha: 1 });
+      const triggerParent = heading.closest("[data-split-trigger]");
+      const type = heading.dataset.splitReveal || "words";
+      const triggerValue = getDataValue(heading, triggerParent, "splitTrigger");
+      const trigger = triggerValue ? document.querySelector(triggerValue) : triggerParent || heading;
+      const instant = getDataValue(heading, triggerParent, "splitInstant") === "true";
+      const startTrigger = getDataValue(heading, triggerParent, "splitStart") || "top 90%";
+      const toggleActions = getDataValue(heading, triggerParent, "splitToggleActions") || "play none none none";
+      const items = triggerParent?.querySelectorAll('[data-split="item"]') || [];
+      console.log(items);
+      if (items.length > 0)
+        gsap.set(items, { visibility: "visible", opacity: 0 });
+      SplitText.create(heading, {
+        type: createTypesToSplit(type).join(", "),
+        mask: "lines",
+        autoSplit: true,
+        linesClass: "line",
+        wordsClass: "word",
+        charsClass: "letter",
+        onSplit: function(instance) {
+          const targets = instance[type];
+          const config = splitConfig[type];
+          const tl = gsap.timeline();
+          tl.from(targets, {
+            yPercent: 110,
+            duration: config.duration,
+            stagger: config.stagger,
+            ease: "expo.out"
+          });
+          if (items.length > 0) {
+            tl.to(
+              items,
+              {
+                opacity: 1,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "expo.out"
+              },
+              "<0.25"
+            );
+          }
+          if (instant) {
+            tl.play();
+          } else {
+            const scrollConfig = {
+              trigger,
+              start: startTrigger,
+              animation: tl,
+              ...toggleActions === "play none none none" ? { once: true } : { toggleActions }
+            };
+            ScrollTrigger.create(scrollConfig);
+          }
+        }
+      });
+    });
+  }
+  function initCounter() {
+    ScrollTrigger.refresh();
+    $("[data-counter]").each(function() {
+      let counter = $(this);
+      let element = this;
+      let originalText = counter.text().trim();
+      let duration = parseFloat(counter.attr("data-duration")) || 2;
+      let suffix = counter.attr("data-suffix") || "";
+      let prefix = counter.attr("data-prefix") || "";
+      let numberMatch = originalText.match(/^([\d\s,]+)/);
+      let numberPart = numberMatch ? numberMatch[1].trim() : originalText;
+      let textSuffix = numberMatch ? originalText.replace(numberMatch[1], "").trim() : "";
+      let endValue, decimals = 0, useComma = false, useSpaces = false;
+      if (numberPart.includes(",") && numberPart.match(/,\d+$/)) {
+        useComma = true;
+        let parts = numberPart.split(",");
+        endValue = parseFloat(parts[0].replace(/\s/g, "") + "." + parts[1]);
+        decimals = parts[1].length;
+      } else if (numberPart.includes(" ") && /^\d[\d\s]*$/.test(numberPart)) {
+        useSpaces = true;
+        endValue = parseFloat(numberPart.replace(/\s/g, ""));
+      } else {
+        endValue = parseFloat(numberPart);
+      }
+      if (isNaN(endValue)) {
+        return;
+      }
+      let startValue = 0;
+      if (decimals > 0) {
+        startValue = parseFloat("0." + "0".repeat(decimals));
+      }
+      let counterObj = { value: startValue };
+      gsap.to(counterObj, {
+        value: endValue,
+        duration,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: element,
+          start: "top bottom",
+          once: true
+        },
+        onUpdate: function() {
+          let displayValue;
+          if (useComma) {
+            displayValue = counterObj.value.toFixed(decimals).replace(".", ",");
+            if (displayValue.includes(",")) {
+              let parts = displayValue.split(",");
+              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+              displayValue = parts.join(",");
+            } else {
+              displayValue = displayValue.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            }
+          } else if (useSpaces) {
+            displayValue = Math.round(counterObj.value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+          } else {
+            displayValue = counterObj.value.toFixed(decimals);
+          }
+          counter.text(prefix + displayValue + textSuffix + suffix);
+        }
+      });
+    });
+  }
+  function initGridAnim() {
+    let animatingPaths = /* @__PURE__ */ new Set();
+    $(".animated-path").css("fill", "rgb(179, 228, 230)").attr("style", "fill-opacity: 0;");
+    function animateRandomPath() {
+      const $paths = $(".animated-path");
+      const availablePaths = $paths.filter(function(index) {
+        return !animatingPaths.has(index);
+      });
+      if (availablePaths.length === 0)
+        return;
+      const randomIndex = Math.floor(Math.random() * availablePaths.length);
+      const pathIndex = $paths.index(availablePaths[randomIndex]);
+      const randomPath = availablePaths.eq(randomIndex);
+      const randomDuration = Math.random() * 2 + 2;
+      const randomDelay = Math.random() * 1;
+      animatingPaths.add(pathIndex);
+      gsap.to(randomPath[0], {
+        duration: randomDuration,
+        delay: randomDelay,
+        fillOpacity: 1,
+        ease: "power2.inOut",
+        yoyo: true,
+        repeat: 1,
+        onComplete: function() {
+          animatingPaths.delete(pathIndex);
+        }
+      });
+    }
+    function startRandomLoop() {
+      animateRandomPath();
+      const nextDelay = Math.random() * 300 + 100;
+      setTimeout(startRandomLoop, nextDelay);
+    }
+    startRandomLoop();
+  }
+  function initGlobalParallax() {
+    const mm = gsap.matchMedia();
+    mm.add(
+      {
+        isMobile: "(max-width:479px)",
+        isMobileLandscape: "(max-width:767px)",
+        isTablet: "(max-width:991px)",
+        isDesktop: "(min-width:992px)"
+      },
+      (context) => {
+        const { isMobile, isMobileLandscape, isTablet } = context.conditions;
+        const ctx = gsap.context(() => {
+          document.querySelectorAll('[data-parallax="trigger"]').forEach((trigger) => {
+            const disable = trigger.getAttribute("data-parallax-disable");
+            if (disable === "mobile" && isMobile || disable === "mobileLandscape" && isMobileLandscape || disable === "tablet" && isTablet) {
+              return;
+            }
+            const target = trigger.querySelector('[data-parallax="target"]') || trigger;
+            const direction = trigger.getAttribute("data-parallax-direction") || "vertical";
+            const prop = direction === "horizontal" ? "xPercent" : "yPercent";
+            const scrubAttr = trigger.getAttribute("data-parallax-scrub");
+            const scrub = scrubAttr ? parseFloat(scrubAttr) : 2;
+            const startAttr = trigger.getAttribute("data-parallax-start");
+            const startVal = startAttr !== null ? parseFloat(startAttr) : -15;
+            const endAttr = trigger.getAttribute("data-parallax-end");
+            const endVal = endAttr !== null ? parseFloat(endAttr) : 0;
+            const scrollStartRaw = trigger.getAttribute("data-parallax-scroll-start") || "top bottom";
+            const scrollStart = `clamp(${scrollStartRaw})`;
+            const scrollEndRaw = trigger.getAttribute("data-parallax-scroll-end") || "bottom top";
+            const scrollEnd = `clamp(${scrollEndRaw})`;
+            gsap.fromTo(
+              target,
+              { [prop]: startVal },
+              {
+                [prop]: endVal,
+                ease: "none",
+                scrollTrigger: {
+                  trigger,
+                  start: scrollStart,
+                  end: scrollEnd,
+                  scrub
+                }
+              }
+            );
+          });
+        });
+        return () => ctx.revert();
+      }
+    );
+  }
+  $(document).ready(function() {
+    initSwipers(swiperInstances);
+    initNavScroll();
+    initSubMenu();
+    initAccordionCSS();
+    initMaskTextScrollReveal();
+    initCounter();
+    initGridAnim();
+    initGlobalParallax();
+  });
+  window.addEventListener("load", () => {
+    ScrollTrigger.refresh();
+  });
+})();
+//# sourceMappingURL=index.js.map

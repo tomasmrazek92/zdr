@@ -145,7 +145,7 @@ function initAccordionCSS() {
 function initMaskTextScrollReveal() {
   const splitConfig = {
     lines: { duration: 0.8, stagger: 0.1 },
-    words: { duration: 0.6, stagger: 0.05 },
+    words: { duration: 0.7, stagger: 0.1 },
     chars: { duration: 0.4, stagger: 0.02 },
   };
 
@@ -164,11 +164,11 @@ function initMaskTextScrollReveal() {
     gsap.set(heading, { autoAlpha: 1 });
 
     const triggerParent = heading.closest('[data-split-trigger]');
-    const type = heading.dataset.splitReveal || 'lines';
+    const type = heading.dataset.splitReveal || 'words';
     const triggerValue = getDataValue(heading, triggerParent, 'splitTrigger');
     const trigger = triggerValue ? document.querySelector(triggerValue) : triggerParent || heading;
     const instant = getDataValue(heading, triggerParent, 'splitInstant') === 'true';
-    const startTrigger = getDataValue(heading, triggerParent, 'splitStart') || 'top 70%';
+    const startTrigger = getDataValue(heading, triggerParent, 'splitStart') || 'top 90%';
     const toggleActions =
       getDataValue(heading, triggerParent, 'splitToggleActions') || 'play none none none';
     const items = triggerParent?.querySelectorAll('[data-split="item"]') || [];
@@ -205,7 +205,7 @@ function initMaskTextScrollReveal() {
               stagger: 0.1,
               ease: 'expo.out',
             },
-            '-=0.5'
+            '<0.25'
           );
         }
 
@@ -238,21 +238,29 @@ function initCounter() {
     let suffix = counter.attr('data-suffix') || '';
     let prefix = counter.attr('data-prefix') || '';
 
+    let numberMatch = originalText.match(/^([\d\s,]+)/);
+    let numberPart = numberMatch ? numberMatch[1].trim() : originalText;
+    let textSuffix = numberMatch ? originalText.replace(numberMatch[1], '').trim() : '';
+
     let endValue,
       decimals = 0,
       useComma = false,
       useSpaces = false;
 
-    if (originalText.includes(',') && originalText.match(/,\d+$/)) {
+    if (numberPart.includes(',') && numberPart.match(/,\d+$/)) {
       useComma = true;
-      let parts = originalText.split(',');
+      let parts = numberPart.split(',');
       endValue = parseFloat(parts[0].replace(/\s/g, '') + '.' + parts[1]);
       decimals = parts[1].length;
-    } else if (originalText.includes(' ')) {
+    } else if (numberPart.includes(' ') && /^\d[\d\s]*$/.test(numberPart)) {
       useSpaces = true;
-      endValue = parseFloat(originalText.replace(/\s/g, ''));
+      endValue = parseFloat(numberPart.replace(/\s/g, ''));
     } else {
-      endValue = parseFloat(originalText);
+      endValue = parseFloat(numberPart);
+    }
+
+    if (isNaN(endValue)) {
+      return;
     }
 
     let startValue = 0;
@@ -291,7 +299,7 @@ function initCounter() {
           displayValue = counterObj.value.toFixed(decimals);
         }
 
-        counter.text(prefix + displayValue + suffix);
+        counter.text(prefix + displayValue + textSuffix + suffix);
       },
     });
   });
@@ -382,7 +390,7 @@ function initGlobalParallax() {
 
           // Get the end position in %
           const endAttr = trigger.getAttribute('data-parallax-end');
-          const endVal = endAttr !== null ? parseFloat(endAttr) : -5;
+          const endVal = endAttr !== null ? parseFloat(endAttr) : 0;
 
           // Get the start value of the ScrollTrigger
           const scrollStartRaw = trigger.getAttribute('data-parallax-scroll-start') || 'top bottom';
