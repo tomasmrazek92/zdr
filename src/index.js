@@ -153,9 +153,9 @@ function initMaskTextScrollReveal() {
 
   const createTypesToSplit = (type) => {
     const typeMap = {
-      lines: ['lines'],
-      words: ['lines', 'words'],
-      chars: ['lines', 'words', 'chars'],
+      lines: ['words'],
+      words: ['words'],
+      chars: ['words'],
     };
     return typeMap[type] || typeMap.lines;
   };
@@ -179,7 +179,7 @@ function initMaskTextScrollReveal() {
 
     SplitText.create(heading, {
       type: createTypesToSplit(type).join(', '),
-      mask: 'lines',
+      mask: 'words',
       autoSplit: true,
       linesClass: 'line',
       wordsClass: 'word',
