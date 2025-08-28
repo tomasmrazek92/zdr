@@ -150,7 +150,7 @@ function initMaskTextScrollReveal() {
   };
 
   const getDataValue = (element, parent, key) => parent?.dataset[key] || element.dataset[key];
-
+  
   const createTypesToSplit = (type) => {
     const typeMap = {
       lines: ['words'],
@@ -422,6 +422,34 @@ function initGlobalParallax() {
   );
 }
 
+function translateDates(){
+  function translateDates() {
+    $("[data-date]:not(.date-translated)").each(function() {
+      const originalText = $(this).text().trim();
+      const parsedDate = dayjs(originalText, 'MMMM D, YYYY', 'en');
+      if (parsedDate.isValid()) {
+        let dutchDate = parsedDate.locale('cs').format('MMMM D, YYYY');
+        dutchDate = dutchDate.charAt(0).toUpperCase() + dutchDate.slice(1);
+        $(this).text(dutchDate).addClass('date-translated');
+      }
+    });
+  }
+
+  
+  window.FinsweetAttributes = window.FinsweetAttributes || [];
+  window.FinsweetAttributes.push([
+    'list',
+    (listInstances) => {
+      listInstances.forEach((listInstance) => {
+        listInstance.addHook('afterRender', (items) => {
+          translateDates();
+          return items;
+        });
+      });
+    },
+  ]);
+}
+
 $(document).ready(function () {
   initSwipers(swiperInstances);
   initNavScroll();
@@ -431,8 +459,5 @@ $(document).ready(function () {
   initCounter();
   initGridAnim();
   initGlobalParallax();
-});
-
-window.addEventListener('load', () => {
-  ScrollTrigger.refresh();
+  translateDates()
 });
