@@ -143,88 +143,93 @@ function initAccordionCSS() {
 }
 
 function initMaskTextScrollReveal() {
+  console.trace('initMaskTextScrollReveal called from:');
+
+  if (window.maskTextInitialized) {
+    return;
+  }
+
   const splitConfig = {
     lines: { duration: 0.8, stagger: 0.1 },
     words: { duration: 0.7, stagger: 0.1 },
     chars: { duration: 0.4, stagger: 0.02 },
   };
 
-  const getDataValue = (element, parent, key) => parent?.dataset[key] || element.dataset[key];
-  
+  const getDataValue = (el, parent, key) => parent?.dataset[key] || el.dataset[key];
+
   const createTypesToSplit = (type) => {
-    const typeMap = {
-      lines: ['words'],
-      words: ['words'],
-      chars: ['words'],
-    };
-    return typeMap[type] || typeMap.lines;
+    const map = { lines: ['words'], words: ['words'], chars: ['words'] };
+    return map[type] || map.lines;
   };
 
   document.querySelectorAll('[data-split="heading"]').forEach((heading) => {
+    if (heading.classList.contains('split-processed') || heading.querySelector('.word')) return;
+    heading.classList.add('split-processed');
+
     gsap.set(heading, { autoAlpha: 1 });
 
     const triggerParent = heading.closest('[data-split-trigger]');
     const type = heading.dataset.splitReveal || 'words';
     const triggerValue = getDataValue(heading, triggerParent, 'splitTrigger');
     const trigger = triggerValue ? document.querySelector(triggerValue) : triggerParent || heading;
-    const instant = getDataValue(heading, triggerParent, 'splitInstant') === 'true';
+    const instant = heading.dataset.splitInstant === 'true';
     const startTrigger = getDataValue(heading, triggerParent, 'splitStart') || 'top 90%';
     const toggleActions =
       getDataValue(heading, triggerParent, 'splitToggleActions') || 'play none none none';
     const items = triggerParent?.querySelectorAll('[data-split="item"]') || [];
 
-    console.log(items);
+    if (items.length) gsap.set(items, { visibility: 'visible', opacity: 0 });
 
-    if (items.length > 0) gsap.set(items, { visibility: 'visible', opacity: 0 });
-
-    SplitText.create(heading, {
+    const splitInstance = SplitText.create(heading, {
       type: createTypesToSplit(type).join(', '),
       mask: 'words',
       autoSplit: true,
       linesClass: 'line',
       wordsClass: 'word',
       charsClass: 'letter',
-      onSplit: function (instance) {
-        const targets = instance[type];
-        const config = splitConfig[type];
-        const tl = gsap.timeline();
+    });
 
-        tl.from(targets, {
-          yPercent: 110,
-          duration: config.duration,
-          stagger: config.stagger,
-          ease: 'expo.out',
-        });
+    heading.splitInstance = splitInstance;
 
-        if (items.length > 0) {
-          tl.to(
-            items,
-            {
-              opacity: 1,
-              duration: 0.8,
-              stagger: 0.1,
-              ease: 'expo.out',
-            },
-            '<0.25'
-          );
-        }
+    const targets = splitInstance[type].filter((el) => heading.contains(el));
+    const config = splitConfig[type];
 
-        if (instant) {
-          tl.play();
-        } else {
-          const scrollConfig = {
-            trigger: trigger,
-            start: startTrigger,
-            animation: tl,
-            ...(toggleActions === 'play none none none'
-              ? { once: true }
-              : { toggleActions: toggleActions }),
-          };
-          ScrollTrigger.create(scrollConfig);
-        }
-      },
+    const tl = gsap.timeline({
+      defaults: { ease: 'expo.out' },
+    });
+
+    tl.from(targets, {
+      yPercent: 110,
+      duration: config.duration,
+      stagger: config.stagger,
+    });
+
+    if (items.length) {
+      tl.to(
+        items,
+        {
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.1,
+        },
+        '<0.25'
+      );
+    }
+
+    if (instant) {
+      tl.play();
+      return; // <- Prevent ScrollTrigger from firing
+    }
+
+    ScrollTrigger.create({
+      trigger,
+      start: startTrigger,
+      animation: tl,
+      ...(toggleActions === 'play none none none' ? { once: true } : { toggleActions }),
     });
   });
+
+  window.maskTextInitialized = true;
 }
 
 function initCounter() {
@@ -238,9 +243,9 @@ function initCounter() {
     let suffix = counter.attr('data-suffix') || '';
     let prefix = counter.attr('data-prefix') || '';
 
-    let numberMatch = originalText.match(/^([\d\s,]+)/);
+    let numberMatch = originalText.match(/^(\d[\d\s,]*\d|\d)/);
     let numberPart = numberMatch ? numberMatch[1].trim() : originalText;
-    let textSuffix = numberMatch ? originalText.replace(numberMatch[1], '').trim() : '';
+    let textSuffix = numberMatch ? originalText.substring(numberMatch[0].length).trim() : '';
 
     let endValue,
       decimals = 0,
@@ -299,7 +304,8 @@ function initCounter() {
           displayValue = counterObj.value.toFixed(decimals);
         }
 
-        counter.text(prefix + displayValue + textSuffix + suffix);
+        let finalText = prefix + displayValue + (textSuffix ? ' ' + textSuffix : '') + suffix;
+        counter.text(finalText);
       },
     });
   });
@@ -422,20 +428,21 @@ function initGlobalParallax() {
   );
 }
 
-function translateDates(){
+function translateDates() {
   function translateDates() {
-    $("[data-date]:not(.date-translated)").each(function() {
-      const originalText = $(this).text().trim();
-      const parsedDate = dayjs(originalText, 'MMMM D, YYYY', 'en');
-      if (parsedDate.isValid()) {
-        let dutchDate = parsedDate.locale('cs').format('MMMM D, YYYY');
-        dutchDate = dutchDate.charAt(0).toUpperCase() + dutchDate.slice(1);
-        $(this).text(dutchDate).addClass('date-translated');
-      }
-    });
+    if ($('html').attr('lang') === 'cs') {
+      $('[data-date]:not(.date-translated)').each(function () {
+        const originalText = $(this).text().trim();
+        const parsedDate = dayjs(originalText, 'MMMM D, YYYY', 'en');
+        if (parsedDate.isValid()) {
+          let dutchDate = parsedDate.locale('cs').format('MMMM D, YYYY');
+          dutchDate = dutchDate.charAt(0).toUpperCase() + dutchDate.slice(1);
+          $(this).text(dutchDate).addClass('date-translated');
+        }
+      });
+    }
   }
 
-  
   window.FinsweetAttributes = window.FinsweetAttributes || [];
   window.FinsweetAttributes.push([
     'list',
@@ -459,5 +466,5 @@ $(document).ready(function () {
   initCounter();
   initGridAnim();
   initGlobalParallax();
-  translateDates()
+  translateDates();
 });
