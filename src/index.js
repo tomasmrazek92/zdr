@@ -118,33 +118,28 @@ function initSubMenu() {
 }
 
 function initAccordionCSS() {
-  document.querySelectorAll('[data-accordion-css-init]').forEach((accordion) => {
-    const closeSiblings = accordion.getAttribute('data-accordion-close-siblings') === 'true';
+  $(document).on('click', '[data-accordion-toggle]', function (event) {
+    const $toggle = $(this);
+    const $singleAccordion = $toggle.closest('[data-accordion-status]');
 
-    accordion.addEventListener('click', (event) => {
-      const toggle = event.target.closest('[data-accordion-toggle]');
-      if (!toggle) return; // Exit if the clicked element is not a toggle
+    if (!$singleAccordion.length) return;
 
-      const singleAccordion = toggle.closest('[data-accordion-status]');
-      if (!singleAccordion) return; // Exit if no accordion container is found
+    const isActive = $singleAccordion.attr('data-accordion-status') === 'active';
+    $singleAccordion.attr('data-accordion-status', isActive ? 'not-active' : 'active');
 
-      const isActive = singleAccordion.getAttribute('data-accordion-status') === 'active';
-      singleAccordion.setAttribute('data-accordion-status', isActive ? 'not-active' : 'active');
+    const $parentAccordion = $singleAccordion.closest('[data-accordion-css-init]');
+    const closeSiblings = $parentAccordion.attr('data-accordion-close-siblings') === 'true';
 
-      // When [data-accordion-close-siblings="true"]
-      if (closeSiblings && !isActive) {
-        accordion.querySelectorAll('[data-accordion-status="active"]').forEach((sibling) => {
-          if (sibling !== singleAccordion)
-            sibling.setAttribute('data-accordion-status', 'not-active');
-        });
-      }
-    });
+    if (closeSiblings && !isActive) {
+      $parentAccordion
+        .find('[data-accordion-status="active"]')
+        .not($singleAccordion)
+        .attr('data-accordion-status', 'not-active');
+    }
   });
 }
 
 function initMaskTextScrollReveal() {
-  console.trace('initMaskTextScrollReveal called from:');
-
   if (window.maskTextInitialized) {
     return;
   }
@@ -249,19 +244,15 @@ function initCounter() {
 
     let endValue,
       decimals = 0,
-      useComma = false,
-      useSpaces = false;
+      useComma = false;
 
     if (numberPart.includes(',') && numberPart.match(/,\d+$/)) {
       useComma = true;
       let parts = numberPart.split(',');
       endValue = parseFloat(parts[0].replace(/\s/g, '') + '.' + parts[1]);
       decimals = parts[1].length;
-    } else if (numberPart.includes(' ') && /^\d[\d\s]*$/.test(numberPart)) {
-      useSpaces = true;
-      endValue = parseFloat(numberPart.replace(/\s/g, ''));
     } else {
-      endValue = parseFloat(numberPart);
+      endValue = parseFloat(numberPart.replace(/\s/g, ''));
     }
 
     if (isNaN(endValue)) {
@@ -296,12 +287,17 @@ function initCounter() {
           } else {
             displayValue = displayValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
           }
-        } else if (useSpaces) {
-          displayValue = Math.round(counterObj.value)
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         } else {
-          displayValue = counterObj.value.toFixed(decimals);
+          if (decimals > 0) {
+            displayValue = counterObj.value.toFixed(decimals);
+            let parts = displayValue.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            displayValue = parts.join('.');
+          } else {
+            displayValue = Math.round(counterObj.value)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+          }
         }
 
         let finalText = prefix + displayValue + (textSuffix ? ' ' + textSuffix : '') + suffix;
