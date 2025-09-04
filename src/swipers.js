@@ -15,6 +15,11 @@ export const swiperInstances = [
           slidesPerView: 4,
         },
       },
+      on: {
+        init: (swiper) => {
+          swiper.slides.length < 4 && $(swiper.el).addClass('hide-after');
+        },
+      },
     },
     'desktop',
   ],

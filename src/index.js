@@ -237,8 +237,9 @@ function initCounter() {
     let duration = parseFloat(counter.attr('data-duration')) || 2;
     let suffix = counter.attr('data-suffix') || '';
     let prefix = counter.attr('data-prefix') || '';
+    let autoFormat = counter.attr('data-format') === 'true';
 
-    let numberMatch = originalText.match(/^(\d[\d\s,]*\d|\d)/);
+    let numberMatch = originalText.match(/^(\d[\d\s,\.]*\d|\d)/);
     let numberPart = numberMatch ? numberMatch[1].trim() : originalText;
     let textSuffix = numberMatch ? originalText.substring(numberMatch[0].length).trim() : '';
 
@@ -250,6 +251,10 @@ function initCounter() {
       useComma = true;
       let parts = numberPart.split(',');
       endValue = parseFloat(parts[0].replace(/\s/g, '') + '.' + parts[1]);
+      decimals = parts[1].length;
+    } else if (numberPart.includes('.') && numberPart.match(/\.\d+$/)) {
+      let parts = numberPart.split('.');
+      endValue = parseFloat(numberPart.replace(/\s/g, ''));
       decimals = parts[1].length;
     } else {
       endValue = parseFloat(numberPart.replace(/\s/g, ''));
@@ -280,23 +285,26 @@ function initCounter() {
 
         if (useComma) {
           displayValue = counterObj.value.toFixed(decimals).replace('.', ',');
-          if (displayValue.includes(',')) {
+          if (autoFormat && displayValue.includes(',')) {
             let parts = displayValue.split(',');
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             displayValue = parts.join(',');
-          } else {
+          } else if (autoFormat) {
             displayValue = displayValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
           }
         } else {
           if (decimals > 0) {
             displayValue = counterObj.value.toFixed(decimals);
-            let parts = displayValue.split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-            displayValue = parts.join('.');
+            if (autoFormat && displayValue.split('.')[0].length > 3) {
+              let parts = displayValue.split('.');
+              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+              displayValue = parts.join('.');
+            }
           } else {
-            displayValue = Math.round(counterObj.value)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            displayValue = Math.round(counterObj.value).toString();
+            if (autoFormat) {
+              displayValue = displayValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
           }
         }
 
@@ -453,7 +461,25 @@ function translateDates() {
   ]);
 }
 
+function clickReveal() {
+  $('a').on('click', function (e) {
+    if (
+      $(this).prop('hostname') == window.location.host &&
+      $(this).attr('href').indexOf('#') === -1 &&
+      $(this).attr('target') !== '_blank'
+    ) {
+      e.preventDefault();
+      let transitionURL = $(this).attr('href');
+      $('.load-preloader').fadeIn(400);
+      setTimeout(function () {
+        window.location = transitionURL;
+      }, 500);
+    }
+  });
+}
+
 $(document).ready(function () {
+  $('.load-preloader').fadeOut();
   initSwipers(swiperInstances);
   initNavScroll();
   initSubMenu();
@@ -463,4 +489,5 @@ $(document).ready(function () {
   initGridAnim();
   initGlobalParallax();
   translateDates();
+  clickReveal();
 });

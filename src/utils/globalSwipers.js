@@ -1,8 +1,7 @@
-// --- Swipers Start ---
 let windowWidth = window.innerWidth;
-// Create an object to hold unique counters for each classSelector.
 let uniqueIdCounters = {};
-let shouldInitializeImmediately = false; // Add this flag at the top of your function
+let shouldInitializeImmediately = false;
+let resizeTimeout;
 
 export const createResponsiveSwiper = (
   componentSelector,
@@ -11,20 +10,15 @@ export const createResponsiveSwiper = (
   options,
   mode
 ) => {
-  // Step 2: Fetch elements by their componentSelector; if none, exit the function
   let elements = $(componentSelector);
   if (elements.length === 0) return;
 
-  // Reset the uniqueIdCounters for this classSelector to 0
   uniqueIdCounters[classSelector] = 0;
 
-  // Step 3: Loop through each matched element
   uniqueIdCounters[classSelector] = uniqueIdCounters[classSelector] || 0;
   elements.each(function () {
-    // Generate a unique key for this instance based on the classSelector and a counter
     let uniqueKey = `${classSelector}_${uniqueIdCounters[classSelector]}`;
 
-    // Step 4: Add unique classes to swiper container, arrows and pagination for this instance
     addUniqueClassesToElements(this, swiperSelector, uniqueKey, [
       '.swiper-arrow',
       '.swiper-pag',
@@ -32,18 +26,14 @@ export const createResponsiveSwiper = (
       '.swiper-navigation',
     ]);
 
-    // Step 5: Merge default and passed swiper options
     let swiperOptions = getMergedSwiperOptions(options, uniqueKey);
 
-    // Step 6: Initialize or destroy swipers based on media query and passed mode
     manageSwiperInstance(this, swiperSelector, uniqueKey, classSelector, swiperOptions, mode);
 
-    // Increment unique ID counter for the specific classSelector
     uniqueIdCounters[classSelector]++;
   });
 };
 
-// Adds unique classes to swiper and control elements
 const addUniqueClassesToElements = (context, swiperSelector, uniqueKey, controlSelectors) => {
   controlSelectors.forEach((selector) => {
     $(context).find(selector).addClass(uniqueKey);
@@ -51,9 +41,7 @@ const addUniqueClassesToElements = (context, swiperSelector, uniqueKey, controlS
   $(context).find(swiperSelector).addClass(uniqueKey);
 };
 
-// Merge default and custom swiper options
 const getMergedSwiperOptions = (options, uniqueKey) => {
-  // Default pagination config
   const defaultPagination = {
     el: `.swiper-navigation.${uniqueKey}`,
     dynamicBullets: true,
@@ -61,12 +49,10 @@ const getMergedSwiperOptions = (options, uniqueKey) => {
     clickable: true,
   };
 
-  // Merge pagination options if provided, otherwise use default
   const paginationConfig = options.pagination
     ? { ...defaultPagination, ...options.pagination }
     : defaultPagination;
 
-  // Handle event merging
   const existingEvents = options.on || {};
   const enhancedEvents = {
     ...existingEvents,
@@ -82,7 +68,6 @@ const getMergedSwiperOptions = (options, uniqueKey) => {
       }, 100);
     },
     resize: function (...args) {
-      // Call existing resize if it exists
       if (existingEvents.resize) {
         existingEvents.resize.apply(this, args);
       }
@@ -105,11 +90,10 @@ const getMergedSwiperOptions = (options, uniqueKey) => {
     },
     pagination: paginationConfig,
     ...options,
-    on: enhancedEvents, // Override the 'on' property after spreading options
+    on: enhancedEvents,
   };
 };
 
-// This function manages Swiper instances: initializing or destroying them based on certain conditions
 const manageSwiperInstance = (
   context,
   swiperSelector,
@@ -118,30 +102,24 @@ const manageSwiperInstance = (
   swiperOptions,
   mode
 ) => {
-  // Initialize the nested object for storing Swiper instances if it doesn't exist
   swipers[classSelector] = swipers[classSelector] || {};
   swipers[classSelector][uniqueKey] = swipers[classSelector][uniqueKey] || {};
 
-  // Fetch the existing Swiper instance information, if it exists
   let existingInstance = swipers[classSelector][uniqueKey];
   let existingSwiper = existingInstance.swiperInstance;
 
-  // Determine under what conditions the Swiper should be initialized for desktop and mobile
   let shouldInitDesktop = mode === 'desktop' && window.matchMedia('(min-width: 768px)').matches;
   let shouldInitMobile =
     mode === 'mobile' && window.matchMedia('(min-width: 0px) and (max-width: 767px)').matches;
   let shouldInitAll = mode === 'all';
 
-  // Destroy function
   const destroySwiper = () => {
     if (existingSwiper) {
       existingSwiper.destroy(true, true);
       delete swipers[classSelector][uniqueKey];
-      console.log('Swiper destroyed for', swiperSelector, 'with uniqueKey', uniqueKey);
     }
   };
 
-  // Reinitialize function
   const reInitObserver = () => {
     const swiperElement = $(`${swiperSelector}.${uniqueKey}`)[0];
     if (!swiperElement) return;
@@ -156,20 +134,15 @@ const manageSwiperInstance = (
               initialized: true,
             };
             observer.disconnect();
-            console.log('Swiper initialized for', swiperSelector, 'with uniqueKey', uniqueKey);
           }
         }
       });
     }, {});
 
-    // Store the observer instance
     swipers[classSelector][uniqueKey].observer = observer;
-
-    // Observe the element
     observer.observe(swiperElement);
   };
 
-  // Check the conditions and either destroy or reinitialize
   if (!shouldInitDesktop && mode === 'desktop') destroySwiper();
   else if (!shouldInitMobile && mode === 'mobile') destroySwiper();
   else if (!shouldInitAll && mode === 'all') destroySwiper();
@@ -178,7 +151,25 @@ const manageSwiperInstance = (
   }
 };
 
-// Function to initialize swipers from an array of instances
+const cleanupAllSwiperStyles = () => {
+  $('.swiper').each(function () {
+    const $swiper = $(this);
+    const $wrapper = $swiper.find('.swiper-wrapper');
+    const $slides = $swiper.find('.swiper-slide');
+
+    $swiper.removeAttr('style');
+    $wrapper.removeAttr('style');
+    $slides.removeAttr('style');
+
+    $swiper.removeClass(
+      'swiper-initialized swiper-horizontal swiper-vertical swiper-pointer-events swiper-backface-hidden'
+    );
+    $slides.removeClass(
+      'swiper-slide-active swiper-slide-prev swiper-slide-next swiper-slide-duplicate swiper-slide-duplicate-active swiper-slide-duplicate-prev swiper-slide-duplicate-next'
+    );
+  });
+};
+
 export const runSwipers = (swiperInstances) => {
   swiperInstances.forEach((instance) => {
     createResponsiveSwiper(...instance);
@@ -186,14 +177,25 @@ export const runSwipers = (swiperInstances) => {
 };
 
 export const initSwipers = (swiperInstances, swipersState) => {
-  // Load
+  windowWidth = window.innerWidth;
+
   runSwipers(swiperInstances);
 
-  // Resize
-  window.addEventListener('resize', function () {
-    if (window.innerWidth !== windowWidth) {
-      windowWidth = window.innerWidth;
-      runSwipers(swiperInstances);
-    }
-  });
+  const handleResize = () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      const newWidth = window.innerWidth;
+      if (Math.abs(newWidth - windowWidth) > 10) {
+        windowWidth = newWidth;
+        runSwipers(swiperInstances);
+      }
+    }, 250);
+  };
+
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+    clearTimeout(resizeTimeout);
+  };
 };
