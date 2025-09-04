@@ -478,16 +478,14 @@ function clickReveal() {
   });
 }
 
-$(document).ready(function () {
-  $('.load-preloader').fadeOut();
-  initSwipers(swiperInstances);
-  initNavScroll();
-  initSubMenu();
-  initAccordionCSS();
-  initMaskTextScrollReveal();
-  initCounter();
-  initGridAnim();
-  initGlobalParallax();
-  translateDates();
-  clickReveal();
-});
+$('.load-preloader').fadeOut();
+initSwipers(swiperInstances);
+initNavScroll();
+initSubMenu();
+initAccordionCSS();
+initMaskTextScrollReveal();
+initCounter();
+initGridAnim();
+initGlobalParallax();
+translateDates();
+clickReveal();
