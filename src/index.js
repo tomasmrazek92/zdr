@@ -433,7 +433,7 @@ function initGlobalParallax() {
 }
 
 function translateDates() {
-  function translateDates() {
+  function translate() {
     if ($('html').attr('lang') === 'cs') {
       $('[data-date]:not(.date-translated)').each(function () {
         const originalText = $(this).text().trim();
@@ -453,7 +453,7 @@ function translateDates() {
     (listInstances) => {
       listInstances.forEach((listInstance) => {
         listInstance.addHook('afterRender', (items) => {
-          translateDates();
+          translate();
           return items;
         });
       });
@@ -466,6 +466,7 @@ function clickReveal() {
     if (
       $(this).prop('hostname') == window.location.host &&
       $(this).attr('href').indexOf('#') === -1 &&
+      $(this).attr('href').indexOf('?') === -1 &&
       $(this).attr('target') !== '_blank'
     ) {
       e.preventDefault();
